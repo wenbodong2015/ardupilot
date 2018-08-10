@@ -1,4 +1,3 @@
-/// -*- tab-width: 4; Mode: C++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 /*
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -31,11 +30,11 @@ class Frame {
 public:
     const char *name;
     uint8_t num_motors;
-    const Motor *motors;
+    Motor *motors;
 
     Frame(const char *_name,
           uint8_t _num_motors,
-          const Motor *_motors) :
+          Motor *_motors) :
         name(_name),
         num_motors(_num_motors),
         motors(_motors) {}
@@ -49,13 +48,12 @@ public:
 
     // calculate rotational and linear accelerations
     void calculate_forces(const Aircraft &aircraft,
-                          const Aircraft::sitl_input &input,
+                          const struct sitl_input &input,
                           Vector3f &rot_accel, Vector3f &body_accel);
     
     float terminal_velocity;
     float terminal_rotation_rate;
     float thrust_scale;
-    float mass;
     uint8_t motor_offset;
 };
 }

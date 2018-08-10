@@ -1,4 +1,3 @@
-// -*- tab-width: 4; Mode: C++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 /*
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -22,6 +21,7 @@
 #if MATH_CHECK_INDEXES
 #include <assert.h>
 #endif
+#include <math.h>
 
 class Quaternion {
 public:
@@ -38,6 +38,12 @@ public:
     // setting constructor
     Quaternion(const float _q1, const float _q2, const float _q3, const float _q4) :
         q1(_q1), q2(_q2), q3(_q3), q4(_q4)
+    {
+    }
+
+    // setting constructor
+    Quaternion(const float _q[4]) :
+        q1(_q[0]), q2(_q[1]), q3(_q[2]), q4(_q[3])
     {
     }
 
@@ -58,6 +64,9 @@ public:
 
     // return the rotation matrix equivalent for this quaternion
     void        rotation_matrix(Matrix3f &m) const;
+
+    // return the rotation matrix equivalent for this quaternion after normalization
+    void        rotation_matrix_norm(Matrix3f &m) const;
 
     void		from_rotation_matrix(const Matrix3f &m);
 

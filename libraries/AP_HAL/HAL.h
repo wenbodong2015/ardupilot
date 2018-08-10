@@ -1,16 +1,27 @@
 #pragma once
 
+class AP_Param;
+
 #include "AP_HAL_Namespace.h"
 
 #include "AnalogIn.h"
 #include "GPIO.h"
 #include "RCInput.h"
 #include "RCOutput.h"
-#include "SPIDriver.h"
+#include "SPIDevice.h"
 #include "Storage.h"
 #include "UARTDriver.h"
 #include "system.h"
 #include "OpticalFlow.h"
+#if HAL_WITH_UAVCAN
+#include "CAN.h"
+#endif
+
+
+#if defined(HAL_NEEDS_PARAM_HELPER)
+#include <AP_Param/AP_Param.h>
+class AP_Param_Helper;
+#endif
 
 class AP_HAL::HAL {
 public:
@@ -20,10 +31,8 @@ public:
         AP_HAL::UARTDriver* _uartD, // telem2
         AP_HAL::UARTDriver* _uartE, // 2nd GPS
         AP_HAL::UARTDriver* _uartF, // extra1
+        AP_HAL::UARTDriver* _uartG, // extra2
         AP_HAL::I2CDeviceManager* _i2c_mgr,
-        AP_HAL::I2CDriver*  _i2c0,
-        AP_HAL::I2CDriver*  _i2c1,
-        AP_HAL::I2CDriver*  _i2c2,
         AP_HAL::SPIDeviceManager* _spi,
         AP_HAL::AnalogIn*   _analogin,
         AP_HAL::Storage*    _storage,
@@ -33,7 +42,12 @@ public:
         AP_HAL::RCOutput*   _rcout,
         AP_HAL::Scheduler*  _scheduler,
         AP_HAL::Util*       _util,
-        AP_HAL::OpticalFlow *_opticalflow)
+        AP_HAL::OpticalFlow *_opticalflow,
+#if HAL_WITH_UAVCAN
+        AP_HAL::CANManager* _can_mgr[MAX_NUMBER_OF_CAN_DRIVERS])
+#else
+        AP_HAL::CANManager** _can_mgr)
+#endif
         :
         uartA(_uartA),
         uartB(_uartB),
@@ -41,10 +55,8 @@ public:
         uartD(_uartD),
         uartE(_uartE),
         uartF(_uartF),
+        uartG(_uartG),
         i2c_mgr(_i2c_mgr),
-        i2c(_i2c0),
-        i2c1(_i2c1),
-        i2c2(_i2c2),
         spi(_spi),
         analogin(_analogin),
         storage(_storage),
@@ -56,6 +68,16 @@ public:
         util(_util),
         opticalflow(_opticalflow)
     {
+#if HAL_WITH_UAVCAN
+        if (_can_mgr == nullptr) {
+            for (uint8_t i = 0; i < MAX_NUMBER_OF_CAN_DRIVERS; i++)
+                can_mgr[i] = nullptr;
+        } else {
+            for (uint8_t i = 0; i < MAX_NUMBER_OF_CAN_DRIVERS; i++)
+                can_mgr[i] = _can_mgr[i];
+        }
+#endif
+
         AP_HAL::init();
     }
 
@@ -83,10 +105,8 @@ public:
     AP_HAL::UARTDriver* uartD;
     AP_HAL::UARTDriver* uartE;
     AP_HAL::UARTDriver* uartF;
+    AP_HAL::UARTDriver* uartG;
     AP_HAL::I2CDeviceManager* i2c_mgr;
-    AP_HAL::I2CDriver*  i2c;
-    AP_HAL::I2CDriver*  i2c1;
-    AP_HAL::I2CDriver*  i2c2;
     AP_HAL::SPIDeviceManager* spi;
     AP_HAL::AnalogIn*   analogin;
     AP_HAL::Storage*    storage;
@@ -97,4 +117,9 @@ public:
     AP_HAL::Scheduler*  scheduler;
     AP_HAL::Util        *util;
     AP_HAL::OpticalFlow *opticalflow;
+#if HAL_WITH_UAVCAN
+    AP_HAL::CANManager* can_mgr[MAX_NUMBER_OF_CAN_DRIVERS];
+#else
+    AP_HAL::CANManager** can_mgr;
+#endif
 };

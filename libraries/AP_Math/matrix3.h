@@ -1,4 +1,3 @@
-// -*- tab-width: 4; Mode: C++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 /*
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -233,9 +232,15 @@ public:
     // create a rotation matrix from Euler angles
     void        from_euler(float roll, float pitch, float yaw);
 
-    // create eulers from a rotation matrix
+    // create eulers from a rotation matrix.
+    // roll is from -Pi to Pi
+    // pitch is from -Pi/2 to Pi/2
+    // yaw is from -Pi to Pi
     void        to_euler(float *roll, float *pitch, float *yaw) const;
 
+    // create matrix from rotation enum
+    void from_rotation(enum Rotation rotation);
+    
     /*
       calculate Euler angles (312 convention) for the matrix.
       See http://www.atacolorado.com/eulersequences.doc
@@ -251,14 +256,6 @@ public:
     // apply an additional rotation from a body frame gyro vector
     // to a rotation matrix.
     void        rotate(const Vector3<T> &g);
-
-    // apply an additional rotation from a body frame gyro vector
-    // to a rotation matrix but only use X, Y elements from gyro vector
-    void        rotateXY(const Vector3<T> &g);
-
-    // apply an additional inverse rotation to a rotation matrix but 
-    // only use X, Y elements from rotation vector
-    void        rotateXYinv(const Vector3<T> &g);
 
     // create rotation matrix for rotation about the vector v by angle theta
     // See: https://en.wikipedia.org/wiki/Rotation_matrix#General_rotations

@@ -1,4 +1,3 @@
-// -*- tab-width: 4; Mode: C++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 /*
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -29,10 +28,16 @@ This provides some support code and variables for MAVLink enabled sketches
 
 
 #ifdef MAVLINK_SEPARATE_HELPERS
-#include "include/mavlink/v1.0/mavlink_helpers.h"
+// Shut up warnings about missing declarations; TODO: should be fixed on
+// mavlink/pymavlink project for when MAVLINK_SEPARATE_HELPERS is defined
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmissing-declarations"
+#include "include/mavlink/v2.0/mavlink_helpers.h"
+#pragma GCC diagnostic pop
 #endif
 
 AP_HAL::UARTDriver	*mavlink_comm_port[MAVLINK_COMM_NUM_BUFFERS];
+bool gcs_alternative_active[MAVLINK_COMM_NUM_BUFFERS];
 
 mavlink_system_t mavlink_system = {7,1};
 
@@ -42,12 +47,8 @@ static uint8_t mavlink_locked_mask;
 // routing table
 MAVLink_routing GCS_MAVLINK::routing;
 
-// static dataflash pointer to support logging text messages
-DataFlash_Class *GCS_MAVLINK::dataflash_p;
-
-// snoop function for vehicle types that want to see messages for
-// other targets
-void (*GCS_MAVLINK::msg_snoop)(const mavlink_message_t* msg) = NULL;
+// static AP_SerialManager pointer
+const AP_SerialManager *GCS_MAVLINK::serialmanager_p;
 
 /*
   lock a channel, preventing use by MAVLink
@@ -80,20 +81,6 @@ uint8_t mav_var_type(enum ap_var_type t)
     return MAVLINK_TYPE_FLOAT;
 }
 
-
-/// Read a byte from the nominated MAVLink channel
-///
-/// @param chan		Channel to receive on
-/// @returns		Byte read
-///
-uint8_t comm_receive_ch(mavlink_channel_t chan)
-{
-    if (!valid_channel(chan)) {
-        return 0;
-    }
-
-    return (uint8_t)mavlink_comm_port[chan]->read();
-}
 
 /// Check for available transmit space on the nominated MAVLink channel
 ///
@@ -141,25 +128,9 @@ void comm_send_buffer(mavlink_channel_t chan, const uint8_t *buf, uint8_t len)
     if (!valid_channel(chan)) {
         return;
     }
+    if (gcs_alternative_active[chan]) {
+        // an alternative protocol is active
+        return;
+    }
     mavlink_comm_port[chan]->write(buf, len);
-}
-
-static const uint8_t mavlink_message_crc_table[256] = MAVLINK_MESSAGE_CRCS;
-
-// return CRC byte for a mavlink message ID
-uint8_t mavlink_get_message_crc(uint8_t msgid)
-{
-	return mavlink_message_crc_table[msgid];
-}
-
-extern const AP_HAL::HAL& hal;
-
-/*
-  return true if the MAVLink parser is idle, so there is no partly parsed
-  MAVLink message being processed
- */
-bool comm_is_idle(mavlink_channel_t chan)
-{
-	mavlink_status_t *status = mavlink_get_channel_status(chan);
-	return status == NULL || status->parse_state <= MAVLINK_PARSE_STATE_IDLE;
 }

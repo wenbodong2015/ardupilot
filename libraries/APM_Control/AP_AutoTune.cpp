@@ -1,5 +1,3 @@
-// -*- tab-width: 4; Mode: C++; c-basic-offset: 4; indent-tabs-mode: nil -*-
-
 /*
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -275,10 +273,10 @@ void AP_AutoTune::log_param_change(float v, const char *suffix)
     }
     char key[AP_MAX_NAME_SIZE+1];
     if (type == AUTOTUNE_ROLL) {
-        strncpy(key, "RLL2SRV_", 8);
+        strncpy(key, "RLL2SRV_", 9);
         strncpy(&key[8], suffix, AP_MAX_NAME_SIZE-8);
     } else {
-        strncpy(key, "PTCH2SRV_", 9);
+        strncpy(key, "PTCH2SRV_", 10);
         strncpy(&key[9], suffix, AP_MAX_NAME_SIZE-9);
     }
     key[AP_MAX_NAME_SIZE] = 0;

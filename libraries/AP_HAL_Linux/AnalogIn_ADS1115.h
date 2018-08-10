@@ -1,7 +1,7 @@
 #pragma once
 
 #include "AP_HAL_Linux.h"
-#include <AP_ADC/AP_ADC.h>
+#include <AP_ADC/AP_ADC_ADS1115.h>
 
 #define ADS1115_ADC_MAX_CHANNELS 6
 
@@ -25,14 +25,13 @@ private:
 class AnalogIn_ADS1115: public AP_HAL::AnalogIn {
 public:
     AnalogIn_ADS1115();
-    void init();
-    AP_HAL::AnalogSource* channel(int16_t n);
+
+    void init() override;
+    AP_HAL::AnalogSource *channel(int16_t n) override;
 
     /* Board voltage is not available */
-    float board_voltage(void)
-    {
-        return 0.0f;
-    }
+    float board_voltage() override { return 5.0f; }
+
 private:
     uint8_t _channels_number;
     void _update();

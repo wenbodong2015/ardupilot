@@ -1,5 +1,3 @@
-/// -*- tab-width: 4; Mode: C++; c-basic-offset: 4; indent-tabs-mode: nil -*-
-
 /*
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -23,11 +21,14 @@
 
 #include "NotifyDevice.h"
 
+#define HIGH 1
+#define LOW 0
+
 class ExternalLED: public NotifyDevice
 {
 public:
     // constructor
-    ExternalLED() : _counter(0), _counter2(0), _pattern(NONE), _pattern_counter(0) {}
+    ExternalLED() : _pattern(NONE) {}
 
     // initialise the LED driver
     bool init(void);

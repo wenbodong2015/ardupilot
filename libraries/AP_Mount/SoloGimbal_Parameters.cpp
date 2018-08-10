@@ -166,12 +166,13 @@ void SoloGimbal_Parameters::update()
     }
 }
 
-void SoloGimbal_Parameters::handle_param_value(DataFlash_Class *dataflash, mavlink_message_t *msg)
+void SoloGimbal_Parameters::handle_param_value(mavlink_message_t *msg)
 {
     mavlink_param_value_t packet;
     mavlink_msg_param_value_decode(msg, &packet);
 
-    if (dataflash != NULL) {
+    DataFlash_Class *dataflash = DataFlash_Class::instance();
+    if (dataflash != nullptr) {
         dataflash->Log_Write_Parameter(packet.param_id, packet.param_value);
     }
 

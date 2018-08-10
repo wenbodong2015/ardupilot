@@ -42,11 +42,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#if CONFIG_HAL_BOARD == HAL_BOARD_QURT
-#define GETOPT_ERROR(...) HAP_printf(__FILE__, __LINE__, __VA_ARGS__)
-#else
 #define GETOPT_ERROR(...) fprintf(stderr, __VA_ARGS__)
-#endif
 
 
 /*
@@ -57,7 +53,7 @@ GetOptLong::GetOptLong(int _argc, char *const _argv[], const char *_optstring, c
     optind(1),
     optopt(0),
     longindex(-1),
-    optarg(NULL),
+    optarg(nullptr),
     argc(_argc),
     argv(_argv),
     optstring(_optstring),
@@ -106,7 +102,7 @@ int GetOptLong::getoption(void)
             place++;
             
             namelen = strcspn(place, "=");
-            for (i = 0; longopts[i].name != NULL; i++)
+            for (i = 0; longopts[i].name != nullptr; i++)
             {
                 if (strlen(longopts[i].name) == namelen
                     && strncmp(place, longopts[i].name, namelen) == 0)
@@ -135,7 +131,7 @@ int GetOptLong::getoption(void)
                     }
                     else
                     {
-                        optarg = NULL;
+                        optarg = nullptr;
                         if (place[namelen] != 0)
                         {
                             /* XXX error? */
@@ -148,7 +144,7 @@ int GetOptLong::getoption(void)
                     
                     place = "";
                     
-                    if (longopts[i].flag == NULL)
+                    if (longopts[i].flag == nullptr)
                         return longopts[i].val;
                     else
                     {
@@ -183,7 +179,7 @@ int GetOptLong::getoption(void)
     
     if (oli[1] != ':')
     { /* don't need argument */
-        optarg = NULL;
+        optarg = nullptr;
         if (!*place)
             ++optind;
     }
